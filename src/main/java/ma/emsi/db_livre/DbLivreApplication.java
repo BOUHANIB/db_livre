@@ -8,8 +8,10 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
-
-import java.util.Date;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.provisioning.JdbcUserDetailsManager;
 
 @SpringBootApplication
 public class DbLivreApplication {
@@ -18,21 +20,34 @@ public class DbLivreApplication {
         SpringApplication.run(DbLivreApplication.class, args);
     }
 
-    //@Bean
-    CommandLineRunner commandLineRunner(ExposantRepository exposantRepository, LivreRepository livreRepository){
+
+    @Bean
+    CommandLineRunner commandLineRunner(JdbcUserDetailsManager jdbcUserDetailsManager, PasswordEncoder passwordEncoder) {
         return args -> {
-
-            livreRepository.save(new Livre(null,"Mohamed","Mohamed","Mohamed",new Date(),0,"Mohamed",null));
-
-            livreRepository.save(new Livre(null,"Yassine","Mohamed","Mohamed",new Date(),0,"Mohamed",null));
-            livreRepository.save(new Livre(null,"Ahmed","Mohamed","Mohamed",new Date(),0,"Mohamed",null));
-            livreRepository.save(new Livre(null,"Said","Mohamed","Mohamed",new Date(),0,"Mohamed",null));
-            livreRepository.save(new Livre(null,"Moussa","Mohamed","Mohamed",new Date(),0,"Mohamed",null));
-
-            exposantRepository.save(new Exposant(null,"nom1","pays1","mail1","pwd1","tel1","site1","add1","resSalle1","res1","spe1","loc1",null));
-            exposantRepository.save(new Exposant(null,"nom2","pays2","mail2","pwd2","tel2","site2","add2","resSalle2","res2","spe2","loc2",null));
-            exposantRepository.save(new Exposant(null,"nom3","pays1","mail1","pwd1","tel1","site1","add2","resSalle3","res3","spe3","loc3",null));
-                System.out.println("Hello");
+            if (!jdbcUserDetailsManager.userExists("user")) {
+                jdbcUserDetailsManager.createUser(
+                        User.withUsername("user").password(passwordEncoder.encode("1234")).roles("USER").build()
+                );
+            }
+            if (!jdbcUserDetailsManager.userExists("exposant")) {
+                jdbcUserDetailsManager.createUser(
+                        User.withUsername("exposant").password(passwordEncoder.encode("1234")).roles("USER", "EXPOSANT").build()
+                );
+            }
+            if (!jdbcUserDetailsManager.userExists("admin")) {
+                jdbcUserDetailsManager.createUser(
+                        User.withUsername("admin").password(passwordEncoder.encode("1234")).roles("USER", "EXPOSANT", "ADMIN").build()
+                );
+            }
+            System.out.println("CommandLineRunner commandLineRunner");
         };
+    }
+
+
+
+
+    @Bean
+    PasswordEncoder passwordEncoder(){
+        return new BCryptPasswordEncoder();
     }
 }

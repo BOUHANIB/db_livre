@@ -14,24 +14,27 @@
 <nav class="p-3">
     <nav class="container">
         <div class="card">
-            <form method="post" th:action="@{saveExposant(page=${page},keyword=${keyword})}">
+            <form method="post" th:action="@{/exposant/saveExposant(page=${page},keyword=${keyword})}">
                 <div class="card-body">
                     <div class="d-flex align-items-center justify-content-between">
                         <h4 class="card-title mt-3 text-center">
                             Editer un exposant :
                         </h4>
-                        <a th:href="@{/listExposants}" class="btn btn-outline-primary ml-auto">
+                        <a th:href="@{/user/listExposants}" class="btn btn-outline-primary ml-auto">
                             <i class="fa fa-arrow-left" aria-hidden="true"></i> Liste des exposants
                         </a>
                     </div>
 
-                    <i>ID :</i>
-                    <div class="form-group input-group">
-                        <div class="input-group-prepend">
-                            <span class="input-group-text"> <i class="fa fa-user"></i> </span>
+                    <input id="id" class="form-control" type="hidden" name="exposantId" th:value="${exposant.exposantId}">
+
+                    <div th:if="${#authorization.expression('hasRole(''ADMIN'')')}">
+                        <i>ID :</i>
+                        <div class="form-group input-group">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text"> <i class="fa fa-user"></i> </span>
+                            </div>
+                            <input class="form-control" type="text" value="" th:value="${exposant.exposantId}" readonly>
                         </div>
-                        <input id="id" class="form-control" type="hidden" name="exposantId" th:value="${exposant.exposantId}">
-                        <input class="form-control" type="text" value="" th:value="${exposant.exposantId}" readonly>
                     </div>
 
                     <i>Nom : (*) Ce champ ne doit pas être vide</i> <span class="text-danger" th:errors="${exposant.nom}"></span>
@@ -133,15 +136,17 @@
                     <script>
                         // Enable the "Save" button when the "Titre" field has valid value
                         const titreInput = document.querySelector('[name="nom"]');
+                        const localisationInput = document.querySelector('[name="localisation"]');
                         const saveButton = document.getElementById('saveButton');
 
                         // Check the input value initially and disable/enable the button accordingly
                         toggleSaveButtonState();
 
                         titreInput.addEventListener('input', toggleSaveButtonState);
+                        localisationInput.addEventListener('input', toggleSaveButtonState);
 
                         function toggleSaveButtonState() {
-                            if (titreInput.value.trim() !== "") {
+                            if (titreInput.value.trim() !== "" && localisationInput.value.trim() !== "") {
                                 saveButton.removeAttribute('disabled');
                             } else {
                                 saveButton.setAttribute('disabled', 'disabled');

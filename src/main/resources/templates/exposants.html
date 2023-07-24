@@ -20,13 +20,14 @@
                     <div>
                         <h3>Liste des Exposants :</h3>
                     </div>
-
-                    <a th:href="@{/formExposants}" class="btn btn-outline-primary ml-auto">
-                        <i class="fa fa-plus"></i>New Exposant
+                <a th:if="${#authorization.expression('hasRole(''ADMIN'')')}">
+                    <a th:href="@{/admin/formExposants}" class="btn btn-outline-primary ml-auto">
+                        <i class="fa fa-plus"></i> New Exposant
                     </a>
+                </a>
 
                 </div>
-                <form method="get" th:action="@{listExposants}">
+                <form method="get" th:action="@{/user/listExposants}">
                     <div class="d-flex align-items-center">
                         <div class="card-body d-flex justify-content-center align-items-center">
                             <div class="input-group">
@@ -44,7 +45,9 @@
                 <table class="table table-bordered">
                     <thead>
                     <tr>
+                        <a th:if="${#authorization.expression('hasRole(''ADMIN'')')}">
                         <th>ID</th>
+                        </a>
                         <th>Nom</th>
                         <th>Pays</th>
                         <th>Email</th>
@@ -54,9 +57,12 @@
                     </tr>
                     </thead>
                     <tbody>
-                    <tr th:each="exposant:${listExposants}">
-                        <td th:text="${exposant.exposantId}"></td>
 
+                        <tr th:each="exposant:${listExposants}">
+
+                        <a th:if="${#authorization.expression('hasRole(''ADMIN'')')}">
+                                <td th:text="${exposant.exposantId}"></td>
+                        </a>
 
                         <td>
                             <span th:if="${exposant.nom} != null" th:text="${exposant.nom}"></span>
@@ -81,16 +87,24 @@
                         </td>
 
                         <td style="text-align: center;">
-                            <a th:href="@{/exposantdetails(id=${exposant.exposantId})}" class="btn btn-outline-warning">
+                        <a th:if="${#authorization.expression('hasRole(''USER'')')}">
+                            <a th:href="@{/user/exposantdetails(id=${exposant.exposantId})}" class="btn btn-outline-warning">
                                 <i class="fa fa-bars"></i>
                             </a>
-                            <a th:href="@{/editExposant(id=${exposant.exposantId}, keyword=${keyword}, page=${currentPage})}" class="btn btn-outline-secondary">
+                        </a>
+
+                        <a th:if="${#authorization.expression('hasRole(''EXPOSANT'')')}">
+                            <a th:href="@{/exposant/editExposant(id=${exposant.exposantId}, keyword=${keyword}, page=${currentPage})}" class="btn btn-outline-secondary">
                                 <i class="fa fa-pencil"></i>
                             </a>
+                        </a>
+
+                        <a th:if="${#authorization.expression('hasRole(''ADMIN'')')}">
                             <a onclick="return confirm('Etes vous sûre?')" class="btn btn-outline-danger"
-                               th:href="@{deleteExposant(id=${exposant.exposantId}, keyword=${keyword}, page=${currentPage})}">
+                               th:href="@{/admin/deleteExposant(id=${exposant.exposantId}, keyword=${keyword}, page=${currentPage})}">
                                 <i class="fa fa-trash"></i>
                             </a>
+                        </a>
 
                         </td>
                     </tr>
@@ -102,7 +116,7 @@
                         <a
                                 th:class="${status.index==currentPage?'btn btn-info ms-1':'btn btn-outline-info ms-1'}"
                                 th:text="${status.index}"
-                                th:href="@{listExposants(page=${status.index}, keyword=${keyword})}">
+                                th:href="@{/user/listExposants(page=${status.index}, keyword=${keyword})}">
                         </a>
                     </li>
                 </ul>

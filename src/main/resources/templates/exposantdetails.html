@@ -19,11 +19,11 @@
                  <h4 class="card-title mt-3 text-center">
                         ExposantDetails :
                     </h4>
-                <a th:href="@{/listExposants}" class="btn btn-outline-primary ml-auto">
+                <a th:href="@{/user/listExposants}" class="btn btn-outline-primary ml-auto">
                     <i class="fa fa-arrow-left" aria-hidden="true"></i> Liste des exposants
                 </a>
         </div>
-
+                <a th:if="${#authorization.expression('hasRole(''ADMIN'')')}">
                 <i>ID :</i>
                 <div class="form-group input-group">
                 <div class="input-group-prepend">
@@ -31,6 +31,7 @@
                 </div>
                 <span class="form-control" th:text="${exposant.exposantId}"></span>
             </div>
+                </a>
 
                 <i>Nom :</i>
                 <div class="form-group input-group">
