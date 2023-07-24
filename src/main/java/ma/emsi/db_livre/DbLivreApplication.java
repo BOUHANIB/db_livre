@@ -4,6 +4,7 @@ import ma.emsi.db_livre.entities.Exposant;
 import ma.emsi.db_livre.entities.Livre;
 import ma.emsi.db_livre.repositories.ExposantRepository;
 import ma.emsi.db_livre.repositories.LivreRepository;
+import ma.emsi.db_livre.security.service.AccountService;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -21,7 +22,7 @@ public class DbLivreApplication {
     }
 
 
-    @Bean
+    //@Bean
     CommandLineRunner commandLineRunner(JdbcUserDetailsManager jdbcUserDetailsManager, PasswordEncoder passwordEncoder) {
         return args -> {
             if (!jdbcUserDetailsManager.userExists("user")) {
@@ -44,7 +45,25 @@ public class DbLivreApplication {
     }
 
 
+    //@Bean
+    CommandLineRunner commandLineRunnerUserDetails(AccountService accountService) {
+        return args -> {
+            accountService.addNewRole("USER");
+            accountService.addNewRole("EXPOSANT");
+            accountService.addNewRole("ADMIN");
+            accountService.addNewUser("user1","1234","user1@gmail.com","1234");
+            accountService.addNewUser("exposant1","1234","exposant1@gmail.com","1234");
+            accountService.addNewUser("admin1","1234","admin@gmail1.com","1234");
 
+            accountService.addRoleToUser("user1","USER");
+            accountService.addRoleToUser("exposant1","USER");
+            accountService.addRoleToUser("exposant1","EXPOSANT");
+            accountService.addRoleToUser("admin1","USER");
+            accountService.addRoleToUser("admin1","EXPOSANT");
+            accountService.addRoleToUser("admin1","ADMIN");
+            System.out.println("CommandLineRunnerUserDetails commandLineRunner");
+        };
+    }
 
     @Bean
     PasswordEncoder passwordEncoder(){
